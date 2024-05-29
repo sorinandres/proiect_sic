@@ -9,6 +9,8 @@ p_app._serial.blinkALLleds()
 
 app = Flask(__name__)
 
+p_app._serial.blinkALLleds()
+
 @app.route('/')
 def home():
     return render_template('index.html')
