@@ -24,14 +24,14 @@ class PolarApp:
 
     def __init__(self):
 
-        self.serial = Serial()
+        self._serial = Serial()
 
         try:
-            self.serial : Serial = Serial(port="/dev/ttyUSB0", baudrate=9600)
+            self._serial : Serial = Serial(port="/dev/ttyUSB0", baudrate=9600)
         except:
-            print("Could not connect to the serial port")
+            print("Could not connect to the _serial port")
         
-        self.serial.blinkALLleds()
+        self._serial.blinkALLleds()
 
         self.adapter = Adapter()
         self.adapter.set_callback_on_scan_start()
@@ -126,7 +126,7 @@ class PolarApp:
         self.running = True
 
         try:
-            self.serial.turnALLledsOff()
+            self._serial.turnALLledsOff()
         except:
             pass
 
@@ -136,7 +136,7 @@ class PolarApp:
                 self.running = False
                 self.signal_stop = False
                 try:
-                    self.serial.blinkALLleds()
+                    self._serial.blinkALLleds()
                 except:
                     pass
                 break
@@ -208,14 +208,14 @@ class PolarApp:
 
             try:
                 if bpm10s < 60 or bpm10s > 100 or bpm60s < 60 or bpm60s > 100:
-                    self.serial.turnBPMLedOn()
+                    self._serial.turnBPMLedOn()
                 else:
-                    self.serial.turnBPMLedOff()
+                    self._serial.turnBPMLedOff()
 
                 if hrv10s <= 20 or hrv60s <= 20:
-                    self.serial.turnHRVLedOn()
+                    self._serial.turnHRVLedOn()
                 else:
-                    self.serial.turnHRVLedOff()
+                    self._serial.turnHRVLedOff()
             except:
                 pass
 
@@ -265,9 +265,9 @@ class PolarApp:
 
                 try:
                     if rr >= 20:
-                        self.serial.turnRRLedOn()
+                        self._serial.turnRRLedOn()
                     else:
-                        self.serial.turnRedLedOff()
+                        self._serial.turnRRLedOff()
                 except:
                     pass
 
