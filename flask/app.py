@@ -28,6 +28,7 @@ class PolarApp:
 
         try:
             self._serial : Serial = Serial(port="/dev/ttyUSB0", baudrate=9600)
+            self._serial.blinkALLleds()
         except:
             print("Could not connect to the _serial port")
         
