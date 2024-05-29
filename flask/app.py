@@ -206,20 +206,20 @@ class PolarApp:
 
                 ecg_packets_to_process_60 = []
 
-            self._serial.turnBPMLedOn()
+            self._serial.turnBPMledOn()
 
             try:
                 if (bpm10s < 60) or (bpm10s > 100) or (bpm60s < 60) or (bpm60s > 100):
-                    self._serial.turnBPMLedOn()
+                    self._serial.turnBPMledOn()
 
                 else:
-                    self._serial.turnBPMLedOff()
+                    self._serial.turnBPMledOff()
 
                 if hrv10s <= 20 or hrv60s <= 20:
-                    self._serial.turnHRVLedOn()
+                    self._serial.turnHRVledOn()
                     print("HRV LED ON")
                 else:
-                    self._serial.turnHRVLedOff()
+                    self._serial.turnHRVledOff()
                     print("HRV LED OFF")
             except:
                 pass
@@ -270,9 +270,9 @@ class PolarApp:
 
                 try:
                     if rr >= 20:
-                        self._serial.turnRRLedOn()
+                        self._serial.turnRRledOn()
                     else:
-                        self._serial.turnRRLedOff()
+                        self._serial.turnRRledOff()
                 except:
                     pass
 
