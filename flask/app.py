@@ -36,9 +36,6 @@ class PolarApp:
 
         time.sleep(0.2)
 
-        self.ecgDataFile = open("ecgData.txt", "w")
-        self.accDataFile = open("accData.txt", "w")
-
         self.adapter = Adapter()
         self.adapter.set_callback_on_scan_start()
         self.adapter.set_callback_on_scan_stop()
@@ -108,6 +105,9 @@ class PolarApp:
 
         self.start_ecg_stream()
         self.start_acc_stream()
+
+        self.ecgDataFile = open("ecgData.txt", "w")
+        self.accDataFile = open("accData.txt", "w")
 
         ecg_packets_buffer : List[EcgPacket] = []
         acc_packets_buffer : List[AccPacket] = []
