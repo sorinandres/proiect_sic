@@ -308,7 +308,7 @@
     var accChartZ = new ApexCharts(document.querySelector("#accChartZ"), options);
     accChartZ.render();
 
-    var ws = new WebSocket("ws://localhost:5001");
+    var ws = new WebSocket("ws://192.168.1.128:5001");
 
     ws.onopen = function () {
         console.log("Connected to the server");
