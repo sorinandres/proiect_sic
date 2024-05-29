@@ -34,6 +34,8 @@ class PolarApp:
         
         self._serial.blinkALLleds()
 
+        time.sleep(0.2)
+
         self.adapter = Adapter()
         self.adapter.set_callback_on_scan_start()
         self.adapter.set_callback_on_scan_stop()
