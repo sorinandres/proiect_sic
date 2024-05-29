@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Polar Monitor</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+
+    <style>
+        .circle {
+            width: 30px;
+            height: 30px;
+            background-color: grey;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+
+
+<body>
+    <div class="d-flex justify-content-center">
+        <h1>Polar Monitor</h1>
+    </div>
+    <div class="d-flex justify-content-center">
+        <h2>EKG</h2>
+    </div>
+
+    <div class="d-flex justify-content-center allign">
+        <input type="text" id="deviceName" placeholder="ID dispozitiv">
+        <div style="width: 10px;"></div>
+        <button type="button" class="btn btn-primary" id="scan" onclick="">Scan</button>
+        <div style="width: 10px;"></div>
+        <div class="circle" id="circle-scan"></div>
+        <div style="width: 10px;"></div>
+        <button type="button" class="btn btn-primary" id="connect" onclick="">Connect</button>
+        <div style="width: 10px;"></div>
+        <div class="circle" id="circle-connect"></div>
+        <div style="width: 10px;"></div>
+        <button type="button" class="btn btn-primary" id="start" onclick="">Start</button>
+        <div style="width: 10px;"></div>
+        <div class="circle" id="circle-start"></div>
+        <div style="width: 10px;"></div>
+        <button type="button" class="btn btn-primary" id="stop" onclick="">Stop</button>
+        <div style="width: 10px;"></div>
+        <button type="button" class="btn btn-primary" id="reste-ble-controller" onclick="">Reseteaza Controller BLE</button>
+    </div>
+
+    <div class="container d-inline">
+        <div class="row">
+            <div class="col-6" id="ecgChart"></div>
+            <div class="col-6">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">BPM 10s<div style="width: 10px;"></div><div class="circle" id="cirlcle-bpm-10s"></div></th>
+                            <th scope="col">HRV 10s<div style="width: 10px;"></div><div class="circle" id="cirlcle-hrv-10s"></div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="BPM">0</td> <div></div>
+                            <td id="HRV">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">BPM 60s<div style="width: 10px;"></div><div class="circle" id="cirlcle-bpm-60s"></div></th>
+                            <th scope="col">HRV 60s<div style="width: 10px;"></div><div class="circle" id="cirlcle-hrv-60s"></div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="BPM-60">0</td> <div></div>
+                            <td id="HRV-60">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <h2>Rata respiratorie</h2> <div style="width: 10px;"></div> <div class="circle" id="circle-resp"></div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <h3 id="rr">0</h3><h3>-RPM</h3>
+    </div>
+    <div class="container d-inline">
+        <div class="row">
+            <div class="col" id="accChartX"></div>
+            <div class="col" id="accChartY"></div>
+            <div class="col" id="accChartZ"></div>
+        </div>
+    </div>
+</body>
+<script>
+    // ECG Chart
+    let data = []
+
+    let accSeriesX = []
+    let accSeriesY = []
+    let accSeriesZ = []
+
+    var index = 0
+    var indexAccX = 0
+    var indexAccY = 0
+    var indexAccZ = 0
+
+    var options = {
+        chart: {
+            id: 'realtime',
+            height: 300,
+            width: '100%',
+            type: 'line',
+            toolbar: {
+                show: false
+            },
+
+            animations: {
+                enabled: false
+            },
+            zoom: {
+                enabled: false
+            }
+        },
+        stroke: {
+            curve: 'straight',
+            width: 2,
+        },
+        series: [{
+            name: 'Measurement',
+            data: data.slice()
+        }],
+        yaxis: {
+            title: {
+                text: 'uV'
+            },
+            min: -1600,
+            max: 1600,
+            numericFormat: {
+                forceNiceScale: true,
+                label: {
+                    formatter: function (value) {
+                        return value.toFixed(0);
+                    }
+                }
+            }
+        },
+        xaxis: {
+            range: 73 * 6,
+            tickAmount: 10,
+        }
+    }
+
+    var chart = new ApexCharts(document.querySelector("#ecgChart"), options);
+
+    chart.render();
+
+    //acc chart X
+    var options = {
+        chart: {
+            height: 300,
+            type: 'line',
+            toolbar: {
+                show: false
+            },
+            animations: {
+                enabled: false
+            },
+            zoom: {
+                enabled: false
+            }
+        },
+        stroke: {
+            curve: 'straight',
+            width: 2,
+        },
+        series: [{
+            name: 'Measurement',
+            data: []
+        }],
+        yaxis: {
+            title: {
+                text: 'Semnal Accelerometru X'
+            },
+            min: -10,
+            max: 10,
+            numericFormat: {
+                forceNiceScale: true,
+                label: {
+                    formatter: function (value) {
+                        return value.toFixed(0);
+                    }
+                }
+            }
+        },
+        xaxis: {
+            range: 36* 27,
+            tickAmount: 10,
+        }
+    }
+
+    var accChartX = new ApexCharts(document.querySelector("#accChartX"), options);
+    accChartX.render();
+
+    //acc chart Y
+
+    var options = {
+        chart: {
+            height: 300,
+            type: 'line',
+            toolbar: {
+                show: false
+            },
+            animations: {
+                enabled: false
+            },
+            zoom: {
+                enabled: false
+            }
+        },
+        stroke: {
+            curve: 'straight',
+            width: 2,
+        },
+        series: [{
+            name: 'Measurement',
+            data: []
+        }],
+        yaxis: {
+            title: {
+                text: 'Semnal Accelerometru Y'
+            },
+            min: -10,
+            max: 10,
+            numericFormat: {
+                forceNiceScale: true,
+                label: {
+                    formatter: function (value) {
+                        return value.toFixed(0);
+                    }
+                }
+            }
+        },
+        xaxis: {
+            range: 36* 27,
+            tickAmount: 10,
+        }
+    }
+
+    var accChartY = new ApexCharts(document.querySelector("#accChartY"), options);
+    accChartY.render();
+
+    //acc chart Z
+
+    var options = {
+        chart: {
+            height: 300,
+            type: 'line',
+            toolbar: {
+                show: false
+            },
+            animations: {
+                enabled: false
+            },
+            zoom: {
+                enabled: false
+            }
+        },
+        stroke: {
+            curve: 'straight',
+            width: 2,
+        },
+        series: [{
+            name: 'Measurement',
+            data: []
+        }],
+        yaxis: {
+            title: {
+                text: 'Semnal Accelerometru Z'
+            },
+            min: -10,
+            max: 10,
+            numericFormat: {
+                forceNiceScale: true,
+                label: {
+                    formatter: function (value) {
+                        return value.toFixed(0);
+                    }
+                }
+            }
+        },
+        xaxis: {
+            range: 36* 27,
+            tickAmount: 10,
+        }
+    }
+
+    var accChartZ = new ApexCharts(document.querySelector("#accChartZ"), options);
+    accChartZ.render();
+
+    var ws = new WebSocket("ws://localhost:5001");
+
+    ws.onopen = function () {
+        console.log("Connected to the server");
+    };
+
+
+    ws.onmessage = function (event) {
+        // take event data and split the string into an array of integers
+        let receivedData = event.data.split(' ').map(Number);
+
+        if (receivedData[0] == 1000) {
+            receivedData.shift()
+            receivedData.pop()
+            for (let i = 0; i < receivedData.length; i++) {
+                data.push({
+                    x: index,
+                    y: receivedData[i]
+                });
+                index += 1;
+            }
+
+            chart.updateSeries([{
+                data: data
+            }]);
+
+            if (data.length >= 73 * 6) {
+                data = data.slice(73);
+            }
+        }
+
+        if (receivedData[0] == 1001) {
+            document.getElementById("BPM").innerHTML = receivedData[1];
+            if (receivedData[1] > 60 && receivedData[1] < 100) {
+                document.getElementById("cirlcle-bpm-10s").style.backgroundColor = "green";
+            } else {
+                document.getElementById("cirlcle-bpm-10s").style.backgroundColor = "red";
+            }
+        }
+
+        if (receivedData[0] == 1002) {
+            if (receivedData[1] > 20)
+            {
+                document.getElementById("cirlcle-hrv-10s").style.backgroundColor = "green";
+            }
+            else
+            {
+                document.getElementById("cirlcle-hrv-10s").style.backgroundColor = "red";
+            }
+            document.getElementById("HRV").innerHTML = receivedData[1];
+        }
+
+        if (receivedData[0] == 1007) {
+            if (receivedData[1] > 60 && receivedData[1] < 100) {
+                document.getElementById("cirlcle-bpm-60s").style.backgroundColor = "green";
+            } else {
+                document.getElementById("cirlcle-bpm-60s").style.backgroundColor = "red";
+            }
+            document.getElementById("BPM-60").innerHTML = receivedData[1];
+        }
+
+        if (receivedData[0] == 1008) {
+            if (receivedData[1] > 20)
+            {
+                document.getElementById("cirlcle-hrv-60s").style.backgroundColor = "green";
+            }
+            else
+            {
+                document.getElementById("cirlcle-hrv-60s").style.backgroundColor = "red";
+            }
+            document.getElementById("HRV-60").innerHTML = receivedData[1];
+        }
+
+        if (receivedData[0] == 1003) {
+
+            accSeriesX = []
+
+            receivedData.shift()
+            receivedData.pop()
+            for (let i = 0; i < receivedData.length; i++) {
+                accSeriesX.push({
+                    x: indexAccX,
+                    y: receivedData[i]
+                });
+                indexAccX += 1;
+            }
+
+            accChartX.updateSeries([{
+                data: accSeriesX
+            }]);
+
+            dataLength = receivedData.length
+
+        }
+
+        if (receivedData[0] == 1004) {
+            receivedData.shift()
+            receivedData.pop()
+
+            accSeriesY = []
+
+            for (let i = 0; i < receivedData.length; i++) {
+                accSeriesY.push({
+                    x: indexAccY,
+                    y: receivedData[i]
+                });
+                indexAccY += 1;
+            }
+
+            accChartY.updateSeries([{
+                data: accSeriesY
+            }]);
+
+            dataLength = receivedData.length
+        }
+
+        if (receivedData[0] == 1005) {
+
+            accSeriesZ = []
+
+            receivedData.shift()
+            receivedData.pop()
+            for (let i = 0; i < receivedData.length; i++) {
+                accSeriesZ.push({
+                    x: indexAccZ,
+                    y: receivedData[i]
+                });
+                indexAccZ += 1;
+            }
+
+            accChartZ.updateSeries([{
+                data: accSeriesZ
+            }]);
+
+            dataLength = receivedData.length
+
+        }
+
+        if (receivedData[0] == 1006) {
+            if(receivedData[1] < 20)
+            {
+                document.getElementById("circle-resp").style.backgroundColor = "green";
+            }
+            else
+            {
+                document.getElementById("circle-resp").style.backgroundColor = "red";
+            }
+            document.getElementById("rr").innerHTML = receivedData[1];
+        }
+    };
+
+    //make scan connection and start buttons work with request to url /scan, /connect and /start
+    // what is returned from the server is displayed in a div color red or green - at the beggining is gray
+    document.getElementById("scan").onclick = async function () {
+
+        // take the value from the input field
+        let deviceName = document.getElementById("deviceName").value;
+
+        if (deviceName == "") {
+            alert("Please enter a device name");
+            return;
+        }
+
+
+        let response = await fetch("/scan", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                deviceName: deviceName
+            }),
+        }); 
+        let result = await response.json();
+        if (result.content == "Device found") {
+            document.getElementById("circle-scan").style.backgroundColor = "green";
+        } else {
+            console.log(result.content)
+            document.getElementById("circle-scan").style.backgroundColor = "red";
+        }
+    };
+
+    document.getElementById("connect").onclick = async function () {
+        let response = await fetch("/connect");
+        let result = await response.json();
+        if (result.content == "Device connected") {
+            document.getElementById("circle-connect").style.backgroundColor = "green";
+        } else {
+            console.log(result.content)
+            document.getElementById("circle-connect").style.backgroundColor = "red";
+        }
+    };
+
+    document.getElementById("start").onclick = async function () {
+        let response = await fetch("/run");
+        let result = await response.json();
+        if (result.content == "Running") {
+            document.getElementById("circle-start").style.backgroundColor = "green";
+        } else {
+            console.log(result.content)
+            document.getElementById("circle-start").style.backgroundColor = "red";
+        }
+    };
+
+
+</script>
+
+</html>
