@@ -3,9 +3,9 @@ from app import PolarApp
 from threading import Thread
 import time
 
-app = Flask(__name__)
-
 p_app = PolarApp()
+
+app = Flask(__name__)
 
 @app.route('/')
 def home():
