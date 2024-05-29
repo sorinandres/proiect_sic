@@ -61,7 +61,7 @@ def connect():
 def stop():
     p_app.stop_ecg_stream()
     p_app.stop_acc_stream()
-    p_app.signal_stop()
+    p_app.signal_stop = True
     p_app_thread.join()
     p_app.disconnect()
     return {"content": "Stopped"}
