@@ -172,12 +172,8 @@ class PolarApp:
 
             for packet in acc_packets_buffer:
                 x, y, z = packet.get_samples()
-                for sample in x:
-                    self.accDataFile.write(str(sample) + "\n")
-                for sample in y:
-                    self.accDataFile.write(str(sample) + "\n")
-                for sample in z:
-                    self.accDataFile.write(str(sample) + "\n")
+                for i in range(len(x)):
+                    self.accDataFile.write(str(x[i]) + " " + str(y[i]) + " " + str(z[i]) + "\n")
 
             ecg_packets_buffer = [] 
             acc_packets_buffer = []
