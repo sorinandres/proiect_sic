@@ -130,6 +130,12 @@ class PolarApp:
         except:
             pass
 
+        bpm10s = 0
+        hrv10s = 0
+
+        bpm60s = 0
+        hrv60s = 0
+
         while True:
 
             if self.signal_stop:
@@ -166,11 +172,7 @@ class PolarApp:
             self.send_samples(MESSAGE_ECG_SAMPLES, ecg_signal)
             ecg_packets_to_send = []
 
-            bpm10s = 0
-            hrv10s = 0
-
-            bpm60s = 0
-            hrv60s = 0
+            
 
             if len(ecg_packets_to_process) > one_minute_of_data(T_ecg, ECG_SAMPLES_PER_PACKET)//6:
                 # print("Processing ECG data 10 seconds")
