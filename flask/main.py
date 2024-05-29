@@ -44,6 +44,9 @@ p_app_thread = None
 
 @app.route('/run')
 def run():
+
+    global p_app_thread
+
     p_app_thread = Thread(target=p_app.run)
     p_app_thread.start()
 
