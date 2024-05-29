@@ -27,7 +27,7 @@ class PolarApp:
         self.serial = Serial()
 
         try:
-            self.serial : Serial = Serial(port="/dev/ttyACM0", baudrate=115200)
+            self.serial : Serial = Serial(port="/dev/ttyUSB0", baudrate=9600)
         except:
             print("Could not connect to the serial port")
         
@@ -69,7 +69,7 @@ class PolarApp:
     
     def reset(self):
         subprocess.run(["sudo", "hciconfig", "hci0", "reset"])
-        
+
     def disconnect(self):
         self.device.disconnect()
 
