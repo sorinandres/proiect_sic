@@ -7,6 +7,7 @@ import time
 import neurokit2 as nk
 from Packet import EcgPacket, AccPacket
 from Serial import Serial
+import subprocess
 
 MESSAGE_ECG_SAMPLES     = "1000 "
 MESSAGE_ECG_BPM_10S     = "1001 "
@@ -65,7 +66,10 @@ class PolarApp:
             return False
         
         return True
-
+    
+    def reset(self):
+        subprocess.run(["sudo", "hciconfig", "hci0", "reset"])
+        
     def disconnect(self):
         self.device.disconnect()
 

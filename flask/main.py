@@ -66,5 +66,10 @@ def stop():
     p_app.disconnect()
     return {"content": "Stopped"}
 
+@app.route('/reset')
+def reset():
+    p_app.reset()
+    return {"content": "Reset"}
+
 if __name__ == '__main__':
     app.run(debug=True)

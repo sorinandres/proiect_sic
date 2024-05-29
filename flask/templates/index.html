@@ -512,6 +512,30 @@
         }
     };
 
+    document.getElementById("stop").onclick = async function () {
+        let response = await fetch("/stop");
+        let result = await response.json();
+        if (result.content == "Stopped") {
+            document.getElementById("circle-start").style.backgroundColor = "red";
+            document.getElementById("circle-connect").style.backgroundColor = "red";
+            document.getElementById("circle-scan").style.backgroundColor = "red";
+        } else {
+            console.log(result.content)
+        }
+    };
+
+    document.getElementById("reste-ble-controller").onclick = async function () {
+        let response = await fetch("/reset");
+        let result = await response.json();
+        if (result.content == "Reset") {
+            document.getElementById("circle-start").style.backgroundColor = "grey";
+            document.getElementById("circle-connect").style.backgroundColor = "grey";
+            document.getElementById("circle-scan").style.backgroundColor = "grey";
+        } else {
+            console.log(result.content)
+        }
+    };
+
 
 </script>
 
