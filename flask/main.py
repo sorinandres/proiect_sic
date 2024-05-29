@@ -40,10 +40,11 @@ def create_connection():
     else:
         return {"content": "Could not connect to device"}
 
-p_app_thread = Thread(target=p_app.run)
+p_app_thread = None
 
 @app.route('/run')
 def run():
+    p_app_thread = Thread(target=p_app.run)
     p_app_thread.start()
 
     while not p_app.running:
@@ -59,6 +60,8 @@ def connect():
 
 @app.route('/stop')
 def stop():
+    if p_app_thread is None:
+        return {"content": "Not running"}
     p_app.stop_ecg_stream()
     p_app.stop_acc_stream()
     p_app.signal_stop = True
