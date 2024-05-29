@@ -51,6 +51,8 @@
         <button type="button" class="btn btn-primary" id="stop" onclick="">Stop</button>
         <div style="width: 10px;"></div>
         <button type="button" class="btn btn-primary" id="reste-ble-controller" onclick="">Reseteaza Controller BLE</button>
+        <div style="width: 10px;"></div>
+        <button type="button" class="btn btn-primary" id="download" onclick="">Descarca date</button>
     </div>
 
     <div class="container d-inline">
@@ -536,6 +538,9 @@
         }
     };
 
+    document.getElementById("download").onclick = async function () {
+        let response = await fetch("/download");
+    };
 
 </script>
 

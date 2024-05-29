@@ -1,7 +1,8 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_file
 from app import PolarApp
 from threading import Thread
 import time
+import zipfile
 
 p_app = PolarApp()
 time.sleep(1)
@@ -80,6 +81,20 @@ def stop():
 def reset():
     p_app.reset()
     return {"content": "Reset"}
+
+@app.route('/download')
+def download():
+
+    ecgData = 'ecgData.txt'
+    accData = 'accData.txt'
+
+    zipf = zipfile.ZipFile('data.zip', 'w', zipfile.ZIP_DEFLATED)
+    zipf.write(ecgData)
+    zipf.write(accData)
+
+    zipf.close()
+
+    return send_file('data.zip', as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
