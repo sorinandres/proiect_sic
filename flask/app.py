@@ -36,6 +36,9 @@ class PolarApp:
 
         time.sleep(0.2)
 
+        self.ecgDataFile = open("ecgData.txt", "w")
+        self.accDataFile = open("accData.txt", "w")
+
         self.adapter = Adapter()
         self.adapter.set_callback_on_scan_start()
         self.adapter.set_callback_on_scan_stop()
@@ -144,6 +147,8 @@ class PolarApp:
             if self.signal_stop:
                 self.running = False
                 self.signal_stop = False
+                self.accDataFile.close()
+                self.ecgDataFile.close()
                 try:
                     self._serial.blinkALLleds()
                 except:
@@ -160,6 +165,19 @@ class PolarApp:
 
             ecg_packets_to_send += ecg_packets_buffer
             acc_packets_to_send += acc_packets_buffer
+
+            for packet in ecg_packets_buffer:
+                for sample in packet.get_samples():
+                    self.ecgDataFile.write(str(sample) + "\n")
+
+            for packet in acc_packets_buffer:
+                x, y, z = packet.get_samples()
+                for sample in x:
+                    self.accDataFile.write(str(sample) + "\n")
+                for sample in y:
+                    self.accDataFile.write(str(sample) + "\n")
+                for sample in z:
+                    self.accDataFile.write(str(sample) + "\n")
 
             ecg_packets_buffer = [] 
             acc_packets_buffer = []
