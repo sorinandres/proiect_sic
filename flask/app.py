@@ -206,8 +206,6 @@ class PolarApp:
 
                 ecg_packets_to_process_60 = []
 
-            self._serial.turnBPMledOn()
-
             try:
                 if (bpm10s < 60 and bpm10s > 0) or (bpm10s > 100) or (bpm60s < 60 and bpm60s > 0) or (bpm60s > 100):
                     self._serial.turnBPMledOn()
