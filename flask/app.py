@@ -209,18 +209,16 @@ class PolarApp:
             self._serial.turnBPMledOn()
 
             try:
-                if (bpm10s < 60) or (bpm10s > 100) or (bpm60s < 60) or (bpm60s > 100):
+                if (bpm10s < 60 and bpm10s > 0) or (bpm10s > 100) or (bpm60s < 60 and bpm60s > 0) or (bpm60s > 100):
                     self._serial.turnBPMledOn()
 
                 else:
                     self._serial.turnBPMledOff()
 
-                if hrv10s <= 20 or hrv60s <= 20:
+                if (hrv10s <= 20 and hrv10s > 0) or (hrv60s <= 20 and hrv60s > 0):
                     self._serial.turnHRVledOn()
-                    print("HRV LED ON")
                 else:
                     self._serial.turnHRVledOff()
-                    print("HRV LED OFF")
             except:
                 pass
 
