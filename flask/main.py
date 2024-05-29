@@ -94,7 +94,7 @@ def download():
 
     zipf.close()
 
-    return send_file('data.zip', as_attachment=True)
+    return send_file('data.zip')
 
 if __name__ == '__main__':
     app.run(debug=True)
