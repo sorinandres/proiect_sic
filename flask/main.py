@@ -4,6 +4,8 @@ from threading import Thread
 import time
 
 p_app = PolarApp()
+time.sleep(0.2)
+p_app._serial.blinkALLleds()
 
 app = Flask(__name__)
 
